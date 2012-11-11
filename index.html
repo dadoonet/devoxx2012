@@ -12,6 +12,10 @@
         body {
             padding-top: 60px;
         }
+        
+        #tabs-1 {
+        	text-align: center;
+        }
     </style>
 
     <!-- Load JS libraries -->
@@ -48,7 +52,7 @@
 
 		var decalage = 0;
 		if (facet.other > 0) {
-			s[0] = ["Autres", facet.other];
+			s[0] = ["Other", facet.other];
 			decalage++;
 		}
 
@@ -91,9 +95,9 @@
 		}
 
 		if (dtFilterLevel < 4)
-			strRetour = "Tweets du " + strDateDeb + " au " + strDateFin;
+			strRetour = "Tweets from " + strDateDeb + " to " + strDateFin;
 		else
-			strRetour = "Tweets du " + strDateDeb;
+			strRetour = "Tweets at " + strDateDeb;
 
 		return strRetour;
     }	
@@ -189,26 +193,26 @@
 				// Filtre mois / Facet jour
 				facetDate = 'day';
 				dtFilter[dtFilterLevel] = date.toString("yyyy-MM");
-				dtLabel[dtFilterLevel] = date.toString("MMMM yyyy");
+				dtLabel[dtFilterLevel] = date.toString("MM/yyyy");
 			 }
 			 if (dtFilterLevel == 2) {
 				// Filtre jour / facet heure
 				facetDate = 'hour';
 				dtFilter[dtFilterLevel] = date.toString("yyyy-MM-dd");
-				dtLabel[dtFilterLevel] = date.toString("dd MMMM yyyy");
+				dtLabel[dtFilterLevel] = date.toString("dd/MM/yyyy");
 			 }
 			 if (dtFilterLevel == 3) {
 				// Filtre heure / facet minute
 				facetDate = 'minute';
 				dtFilter[dtFilterLevel] = date.addHours(-2).toString("yyyy-MM-ddTHH");
-				dtLabel[dtFilterLevel] = date.addHours(2).toString("dd MMMM yyyy a HH")+"h";
+				dtLabel[dtFilterLevel] = date.addHours(2).toString("dd/MM/yyyy HH")+" h";
 			 }
 			 if (dtFilterLevel >= 4) {
 				dtFilterLevel=4;
 				// Filtre heure / facet minute
 				facetDate = 'minute';
 				dtFilter[dtFilterLevel] = date.addHours(-2).toString("yyyy-MM-ddTHH:mm");
-				dtLabel[dtFilterLevel] = date.addHours(2).toString("dd MMMM yyyy a HH:mm");
+				dtLabel[dtFilterLevel] = date.addHours(2).toString("dd/MM/yyyy HH:mm");
 			 }
 			removeFilter(filtername);
 			addDateFilter(filtername, dtFilter[dtFilterLevel]);
@@ -217,9 +221,10 @@
 
  			 // We remove old click listeners
  			 $( filterLegend ).unbind('click');
+			 $( filterLegend ).text();
 
 			 $( filterLegend )
-				.text(dtLabel[dtFilterLevel])
+				.html('<span class="label label-important">'+dtLabel[dtFilterLevel]+'</span>')
 				.click(function() {
 					dtFilterLevel--;
 
@@ -244,7 +249,7 @@
 					// Suppression du filtre
 					removeFilter(filtername);
 					if (dtFilterLevel > 0) {
-						$( filterLegend ).text(dtLabel[dtFilterLevel]);
+						$( filterLegend ).html('<span class="label label-important">'+dtLabel[dtFilterLevel]+'</span>');
 						addDateFilter(filtername, dtFilter[dtFilterLevel]);
 					} else {
 						// On bloque au niveau 0
@@ -280,10 +285,10 @@
 
 			jQuery('#'+divname).bind('jqplotDataClick', 
 					function (ev, seriesIndex, pointIndex, data) {
-						if(data[0] != "Autres"){
+						if(data[0] != "Other"){
 							filterLegend = "#" + divname + "_filter";
 							$( filterLegend )
-								.text(data[0])
+								.html('<span class="label label-important">'+data[0]+'</span>')
 								.click(function() {
 									removeFilter(filtername);
 									filterLegend = "#" + divname + "_filter";
@@ -305,7 +310,7 @@
 	function showLoading(texte) {
 		$("#wait")
             .addClass('label-info')
-            .text("Recherche de " + texte + " en cours")
+            .text("Searching for " + texte)
             .show();
 	}
 
@@ -315,7 +320,7 @@
 
 		$("#wait")
             .removeClass('label-info')
-            .text(spanTotal.text() + ' éléments trouvés en ' + spanTook.text() + ' ms.')
+            .text(spanTotal.text() + ' tweets found in ' + spanTook.text() + ' ms.')
             .show();
 	}
 
