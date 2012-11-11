@@ -341,6 +341,14 @@
 	// var sES = "http://localhost:9200/";
 	var sES = "http://es-twitter.dyndns.org/";
 	
+	var delay = (function(){
+		  var timer = 0;
+		  return function(callback, ms){
+		    clearTimeout (timer);
+		    timer = setTimeout(callback, ms);
+		  };
+		})();	
+	
 	//
 	// JQuery START FUNCTION
 	//
@@ -350,19 +358,21 @@
 		$( "#dialog:ui-dialog" ).dialog( "destroy" );
 
 		$( "#tabs" ).tabs();
-		$( "#refreshrate" ).val("5");
+		$( "#refreshrate" ).val("30");
 
 		$( "#searchterm" ).keyup (function(event) {
-				var google = $( "#searchterm" ).val();
-				var searchtype = $( "#searchtype" ).val();
-				// If user enter something and is in match_all mode, we send him to
-				// query_string
-				if (google != null && google != "" && searchtype == "match_all") {
-					searchtype = "query_string";
-					$("#searchtype").val(searchtype);
-				}
-				compute_data();
-				return true;
+			delay(function(){
+					var google = $( "#searchterm" ).val();
+					var searchtype = $( "#searchtype" ).val();
+					// If user enter something and is in match_all mode, we send him to
+					// query_string
+					if (google != null && google != "" && searchtype == "match_all") {
+						searchtype = "query_string";
+						$("#searchtype").val(searchtype);
+					}
+					compute_data();
+					return true;
+			    }, 500 );
 			}
 		);
 
@@ -389,7 +399,8 @@
 
 	});
 
-	var bacthId = window.setInterval(batchUpdate, 5000);
+	
+	var bacthId = window.setInterval(batchUpdate, 30000);
 	function batchUpdate() {
         // Only if Resultats is the tab shown
         if($('#tabs li:first').hasClass('active')){
@@ -560,6 +571,7 @@
 					$('#chart_hashtags').text( "" );
 					$('#jsonout').text( "" );
 					
+                    $("#tweets > tbody tr").remove();
 					$('#talkdetails').text( "" );
 					if (jqpChart_terms != null) {
 						jqpChart_terms.destroy();
@@ -569,6 +581,9 @@
 					}
 					if (jqpChart_tweeters != null) {
 						jqpChart_tweeters.destroy();
+					}
+					if (jqpChart_date != null) {
+						jqpChart_date.destroy();
 					}
 				} else {
 					if (jqpChart_terms != null) {
@@ -744,16 +759,15 @@
                         <label class="control-label" for="esNode">Elasticsearch node</label>
                         <div class="controls">
                             <select id="esNode">
-                                <option value="http://es-twitter.dyndns.org/">Node 1</option>
-                                <option value="http://es2-twitter.dyndns.org/">Node 2</option>
-                                <option value="http://localhost:9200/" selected>Localhost</option>
+                                <option value="http://es-twitter.dyndns.org/" selected>Node 1</option>
+                                <option value="http://localhost:9200/">Localhost</option>
                             </select>
                         </div>
                     </div>
                     <div class="control-group">
                         <label class="control-label" for="refreshrate">Refresh every</label>
                         <div class="controls">
-                            <input type="text" id="refreshrate"> second
+                            <input type="text" id="refreshrate"> seconds
                         </div>
                     </div>
                 </form>
